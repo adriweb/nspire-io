@@ -25,10 +25,6 @@
  * Hello World
  */
 
-#ifndef CEBUILD
-#define CEBUILD
-#endif
-
 #include "../include/nspireio/nspireio.h"
 
 int main(void)

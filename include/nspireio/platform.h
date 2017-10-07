@@ -35,16 +35,6 @@
 
 #include <stdbool.h>
 
-#ifdef _TINSPIRE
-	#include "platform-nspire.h"
-#endif
-#ifdef PRIZM
-	#include "platform-prizm.h"
-#endif
-#ifdef CEBUILD
-	#include "platform-ce.h"
-#endif
-//todo fixme
 #include "platform-ce.h"
 
 

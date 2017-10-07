@@ -25,14 +25,9 @@
  * Functions for CE platform
  */
 
-#ifndef CEBUILD
-#define CEBUILD
-#endif
 
 #include "../include/nspireio/platform.h"
 #include "../include/nspireio/nspireio.h"
-
-static void* scrbuf = gfx_vram;
 
 bool any_key_pressed()
 {
@@ -57,7 +52,6 @@ void nio_scrbuf_clear()
 
 void nio_scrbuf_free()
 {
-    scrbuf = NULL;
     gfx_End();
 }
 
@@ -126,7 +120,7 @@ void nio_vram_scroll(unsigned x, unsigned y, unsigned w, unsigned h, unsigned sc
 /*
     unsigned int r = h - scroll;
 
-    uint16_t *p1 = (uint16_t*)scrbuf+x+SCREEN_WIDTH*y;
+    uint16_t *p1 = (uint16_t*)gfx_vram+x+SCREEN_WIDTH*y;
     uint16_t *p2 = p1 + SCREEN_WIDTH*scroll;
     size_t n = sizeof(uint16_t)*w;
     for (unsigned int i = 0; i < r; ++i, p1 += SCREEN_WIDTH, p2 += SCREEN_WIDTH)
@@ -142,6 +136,10 @@ void nio_vram_draw(void)
 }
 
 unsigned int nio_cursor_clock(void) {
+    return (unsigned int) rtc_Time();
+}
+
+unsigned nio_time_get() {
     return (unsigned int) rtc_Time();
 }
 

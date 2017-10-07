@@ -28,10 +28,6 @@
 #ifndef CE_H
 #define CE_H
 
-#ifndef CEBUILD
-#define CEBUILD
-#endif
-
 // Put headers required for our platform here
 #include <stdbool.h>
 #include <stddef.h>
