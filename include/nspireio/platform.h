@@ -50,10 +50,11 @@
 
 // These functions are the same on all platforms...
 
-void nio_vram_pixel_set(unsigned int x, unsigned int y, unsigned int color);
-void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color);
+void nio_set_global_color(unsigned int color);
+void nio_vram_pixel_set(unsigned int x, unsigned int y);
+void nio_vram_fill(unsigned x, unsigned y, unsigned w, unsigned h);
 void nio_vram_draw(void);
-void nio_vram_scroll(const unsigned x, const unsigned y, const unsigned w, const unsigned h, const unsigned scroll, const unsigned color);
+void nio_vram_scroll(unsigned x, unsigned y, unsigned w, unsigned h, unsigned scroll);
 unsigned int nio_cursor_clock(void);
 char nio_ascii_get(int* adaptive_cursor_state);
 

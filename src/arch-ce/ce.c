@@ -103,21 +103,22 @@ uint8_t getPaletteColorIndex(unsigned int color)
     return 0;
 }
 
-void nio_vram_pixel_set(unsigned int x, unsigned int y, unsigned int color)
+void nio_set_global_color(unsigned int color)
 {
-    if (x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT)
-        return;
     gfx_SetColor(getPaletteColorIndex(color));
+}
+
+void nio_vram_pixel_set(unsigned int x, unsigned int y)
+{
     gfx_SetPixel(x, (uint8_t)y);
 }
 
-void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color)
+void nio_vram_fill(unsigned x, unsigned y, unsigned w, unsigned h)
 {
-    gfx_SetColor(getPaletteColorIndex(color));
     gfx_FillRectangle_NoClip(x, (uint8_t) y, w, (uint8_t) h);
 }
 
-void nio_vram_scroll(const unsigned x, const unsigned y, const unsigned w, const unsigned h, const unsigned scroll, const unsigned color) {
+void nio_vram_scroll(unsigned x, unsigned y, unsigned w, unsigned h, unsigned scroll) {
     if (!scroll) return;
     gfx_ShiftUp((uint8_t) scroll);
 
@@ -132,7 +133,7 @@ void nio_vram_scroll(const unsigned x, const unsigned y, const unsigned w, const
         memmove(p1, p2, n);
  */
 
-    nio_vram_fill(x, y + h - scroll, w, scroll, color);
+    nio_vram_fill(x, y + h - scroll, w, scroll);
 }
 
 void nio_vram_draw(void)

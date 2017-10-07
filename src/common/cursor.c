@@ -48,11 +48,12 @@ void nio_cursor_draw(nio_console* csl)
 
 		if (c->cursor_type == 0) {
 			// Draw a box for the cursor
+            nio_set_global_color(foreground_color);
 			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j);
 				}
 			}
 		} else if (c->cursor_type == 1) {
@@ -65,12 +66,13 @@ void nio_cursor_draw(nio_console* csl)
 			}
 
 			// Draw it!
+            nio_set_global_color(foreground_color);
 			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
 				//for(j = NIO_CHAR_HEIGHT; j > (NIO_CHAR_HEIGHT - c->cursor_line_width); j--)
 				for(j = 0; j < c->cursor_line_width; j++)
 				{
-					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j-1, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j-1);
 				}
 			}
 		} else if (c->cursor_type == 2) {
@@ -83,10 +85,12 @@ void nio_cursor_draw(nio_console* csl)
 			}
 
 			// Draw it!
-			for(i = 0; i < c->cursor_line_width; i++) {
+            nio_set_global_color(foreground_color);
+			for(i = 0; i < c->cursor_line_width; i++)
+            {
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j);
 				}
 			}
 		} else if (c->cursor_type == 3 || c->cursor_type == 4) {
@@ -112,10 +116,8 @@ void nio_cursor_draw(nio_console* csl)
 					{
 						pixelOn = c->cursor_custom_data[i] << j;
 						pixelOn = pixelOn & 0x80;
-						if (pixelOn)
-							nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j, foreground_color);
-						else if (!pixelOn)
-							nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j, background_color);
+                        nio_set_global_color(pixelOn ? foreground_color : background_color);
+                        nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j);
 					}
 				}
 			}
@@ -138,11 +140,12 @@ void nio_cursor_erase(nio_console* csl)
 	// Draw a box for the cursor
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
 		int i, j;
+		nio_set_global_color(background_color);
 		for(i = 0; i < NIO_CHAR_WIDTH; i++)
 		{
 			for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 			{
-				nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, background_color);
+				nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j);
 			}
 		}
 		nio_vram_csl_drawchar(csl,c->cursor_x,c->cursor_y);
@@ -213,7 +216,7 @@ void nio_cursor_width(nio_console* csl, int cursor_width)
 	c->cursor_line_width = cursor_width;
 }
 
-void nio_cursor_custom(nio_console* csl, unsigned char cursor_data[6])
+void nio_cursor_custom(nio_console* csl, const unsigned char cursor_data[6])
 {
 	nio_console_private *c = *csl;
 	int i;

@@ -81,7 +81,7 @@ void console::vram_csl_drawchar(const int pos_x, const int pos_y)
 	nio_vram_csl_drawchar(c,pos_x,pos_y);
 }
 
-void console::csl_savechar(const char ch, const int pos_x, const int pos_y)
+void console::csl_savechar(char ch, const int pos_x, const int pos_y)
 {
 	nio_csl_savechar(c,ch,pos_x,pos_y);
 }

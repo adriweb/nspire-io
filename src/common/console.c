@@ -42,7 +42,7 @@ unsigned char adaptive_cursor[5][6] =
 	{0xDB,0x81,0xDB,0xDB,0x81,0xDB}  // '#' cursor
 };
 
-void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor)
+void nio_vram_pixel_putc(int x, int y, char ch, int bgColor, int textColor)
 {
 	// Put a char in VRAM
 	int i, j, pixelOn;
@@ -52,13 +52,13 @@ void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgCo
 		{
 			pixelOn = MBCharSet8x6_definition[(unsigned char)ch][i] << j ;
 			pixelOn = pixelOn & 0x80 ;
-			if (pixelOn) 		nio_vram_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,textColor);
-			else if(!pixelOn) 	nio_vram_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,bgColor);
+			nio_set_global_color(pixelOn ? textColor : bgColor);
+			nio_vram_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j);
 		}
 	}
 }
 
-void nio_vram_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor)
+void nio_vram_pixel_puts(int x, int y, const char* str, int bgColor, int textColor)
 {
 	// Put a string in VRAM
 	int l = strlen(str);
@@ -76,11 +76,11 @@ void nio_vram_pixel_puts(const int x, const int y, const char* str, const int bg
 	}
 }
 
-void nio_vram_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor)
+void nio_vram_grid_puts(int offset_x, int offset_y, int x, int y, const char *str, unsigned char bgColor, unsigned char textColor)
 {
 	nio_vram_pixel_puts(offset_x+x*NIO_CHAR_WIDTH,offset_y+y*NIO_CHAR_HEIGHT,str,bgColor,textColor);
 }
-void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor)
+void nio_vram_grid_putc(int offset_x, int offset_y, int x, int y, char ch, unsigned char bgColor, unsigned char textColor)
 {
 	nio_vram_pixel_putc(offset_x+x*NIO_CHAR_WIDTH,offset_y+y*NIO_CHAR_HEIGHT,ch,bgColor,textColor);
 }
@@ -207,7 +207,7 @@ void nio_set_idle_callback(nio_console* csl, int (*callback)(void*), void* data)
 	c->idle_callback_data = data;
 }
 
-bool nio_init(nio_console* csl, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled)
+bool nio_init(nio_console* csl, int size_x, int size_y, int offset_x, int offset_y, unsigned char background_color, unsigned char foreground_color, const bool drawing_enabled)
 {
 	uint8_t p;
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
@@ -281,8 +281,8 @@ void nio_clear(nio_console* csl)
 	c->cursor_y = 0;
 	if(c->drawing_enabled)
 	{
-		nio_vram_fill(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, c->default_background_color);
-		
+		nio_set_global_color(c->default_background_color);
+		nio_vram_fill(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT);
 		nio_vram_draw();
 	}
 }
@@ -295,7 +295,8 @@ void nio_scroll(nio_console* csl)
 	memset(c->data+(c->max_x*(c->max_y-1)),0,c->max_x);
 	memset(c->color+(c->max_x*(c->max_y-1)*2),0,c->max_x*2);
 	if (c->drawing_enabled) {
-		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT, c->default_background_color);
+		nio_set_global_color(c->default_background_color);
+		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT);
 	}
 	
 	if(c->cursor_y > 0)
@@ -303,7 +304,7 @@ void nio_scroll(nio_console* csl)
 	c->cursor_x = 0;
 }
 
-void nio_vram_csl_drawchar(nio_console* csl, const int pos_x, const int pos_y)
+void nio_vram_csl_drawchar(nio_console* csl, int pos_x, int pos_y)
 {
 	nio_console_private *c = *csl;
 	char ch = c->data[pos_y*c->max_x+pos_x];
@@ -315,7 +316,7 @@ void nio_vram_csl_drawchar(nio_console* csl, const int pos_x, const int pos_y)
 	nio_vram_grid_putc(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
 }
 
-void nio_csl_savechar(nio_console* csl, const char ch, const int pos_x, const int pos_y)
+void nio_csl_savechar(nio_console* csl, char ch, int pos_x, int pos_y)
 {
 	nio_console_private *c = *csl;
 	unsigned short color = (c->default_background_color << 8) | c->default_foreground_color;
@@ -337,7 +338,7 @@ int nio_getch(nio_console* csl)
 	{
 		while(!any_key_pressed())
 		{
-		        nio_cursor_blinking_draw(csl);
+			nio_cursor_blinking_draw(csl);
 			if(c->idle_callback)
 			{
 				if(c->idle_callback(c->idle_callback_data) != 0)
@@ -516,7 +517,7 @@ void nio_perror(const char* str)
 	nio_puts(strerror(errno));
 }
 
-void nio_color(nio_console* csl, const unsigned char background_color, const unsigned char foreground_color)
+void nio_color(nio_console* csl, unsigned char background_color, unsigned char foreground_color)
 {
 	nio_console_private *c = *csl;
 	c->default_background_color = background_color;
@@ -614,18 +615,18 @@ int nio_read(nio_console *csl, char* str, int num)
 				++c->history_line;
 			else if(c->history[c->history_line] != NULL)
 			{
-				while(i--)
+				while (i--)
 				{
-		                        if(c->cursor_x == 0 && c->cursor_y > 0)
-		                        {
+					if (c->cursor_x == 0 && c->cursor_y > 0)
+					{
 						c->cursor_y--;
 						c->cursor_x = c->max_x - 1;
 						nio_fputc(' ', csl);
 						c->cursor_y--;
 						c->cursor_x = c->max_x - 1;
-					}
-					else
+					} else {
 						nio_fputs("\b \b", csl);
+					}
 					queue_get_top(c->input_buf);
 				}
 				++i;

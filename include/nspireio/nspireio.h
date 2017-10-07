@@ -110,7 +110,7 @@ typedef void *nio_console;
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
+void nio_vram_pixel_putc(int x, int y, char ch, int bgColor, int textColor);
 
 /** Draws a string to the VRAM on the given position. For internal use.
 	@param x x position in columns
@@ -119,7 +119,7 @@ void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgCo
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_vram_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor);
+void nio_vram_pixel_puts(int x, int y, const char* str, int bgColor, int textColor);
 
 /** Draws a string to the VRAM on the given position. For internal use.
 	@param offset_x x offset in px
@@ -130,7 +130,7 @@ void nio_vram_pixel_puts(const int x, const int y, const char* str, const int bg
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_vram_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor);
+void nio_vram_grid_puts(int offset_x, int offset_y, int x, int y, const char *str, unsigned char bgColor, unsigned char textColor);
 
 /** Draws a char to the VRAM on the given position. For internal use.
 	@param offset_x x offset in px
@@ -141,7 +141,7 @@ void nio_vram_grid_puts(const int offset_x, const int offset_y, const int x, con
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor);
+void nio_vram_grid_putc(int offset_x, int offset_y, int x, int y, char ch, unsigned char bgColor, unsigned char textColor);
 
 /** Loads a console from a file on flash storage.
     @param path File path
@@ -191,7 +191,7 @@ void nio_scroll(nio_console* c);
 	@param pos_x x position
 	@param pos_y y position
 */
-void nio_vram_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
+void nio_vram_csl_drawchar(nio_console* c, int pos_x, int pos_y);
 
 /** Saves a char in a console without drawing it. For internal use.
 	@param c Console
@@ -199,14 +199,14 @@ void nio_vram_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 	@param pos_x x position
 	@param pos_y y position
 */
-void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int pos_y);
+void nio_csl_savechar(nio_console* c, char ch, int pos_x, int pos_y);
 
 /** Sets the background- and text color of a console. You can use the predefined colors (NIO_COLOR_*)
 	@param c Console
 	@param background_color Background color
 	@param foreground_color Text color
 */
-void nio_color(nio_console* c, const unsigned char background_color, const unsigned char foreground_color);
+void nio_color(nio_console* c, unsigned char background_color, unsigned char foreground_color);
 
 /** Changes the drawing behavior of a console.
 	@param c Console
@@ -225,7 +225,7 @@ void nio_drawing_enabled(nio_console* c, const bool enable_drawing);
 	@param drawing_enabled See nio_drawing_enabled()
 	@return true if successful
 */
-bool nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
+bool nio_init(nio_console* c, int size_x, int size_y, int offset_x, int offset_y, unsigned char background_color, unsigned char foreground_color, const bool drawing_enabled);
 
 /** Uninitializes a console. This should always be called before the program ends.
 	@param c Console
@@ -459,7 +459,7 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 	custom cursor type (3), the custom cursor will be set to
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
-void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
+void nio_cursor_custom(nio_console* c, const unsigned char cursor_data[6]);
 
 #ifdef NIO_KEEP_COMPATIBILITY
 #define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,true)
