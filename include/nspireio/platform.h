@@ -44,7 +44,8 @@
 #ifdef CEBUILD
 	#include "platform-ce.h"
 #endif
-
+//todo fixme
+#include "platform-ce.h"
 
 
 // These functions are the same on all platforms...
