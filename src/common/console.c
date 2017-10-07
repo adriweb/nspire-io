@@ -28,7 +28,6 @@
 #include <stdarg.h>
 #include "../include/nspireio/nspireio.h"
 #include "charmap.h"
-#include "util.h"
 
 static nio_console* nio_default = NULL;
 static unsigned int csl_count = 0;
@@ -381,7 +380,7 @@ int nio_fprintf(nio_console* c, const char *format, ...)
 	memset(buf,'\0',sizeof(buf));
     va_start(arglist,format);
     if(vsprintf(buf,format,arglist) < 0)
-		exit_with_error("nio_fprintf","vsnprintf failed");
+		abort();
     nio_fputs(buf,c);
     va_end(arglist);
     return strlen(buf);
@@ -394,7 +393,7 @@ int nio_printf(const char *format, ...)
 	memset(buf,'\0',sizeof(buf));
     va_start(arglist,format);
     if(vsprintf(buf,format,arglist) < 0)
-		exit_with_error("nio_printf","vsnprintf failed");
+		abort();
     nio_fputs(buf, nio_default);
     va_end(arglist);
     return strlen(buf);

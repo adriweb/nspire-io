@@ -54,8 +54,6 @@ enum
 	NIO_COLOR_WHITE
 };
 
-#if defined(NSPIREIO_BUILD) || defined(CEBUILD)
-
 /** console structure */
 typedef struct
 {
@@ -87,11 +85,6 @@ typedef struct
 } nio_console_private;
 
 typedef nio_console_private *nio_console;
-
-#else
-// Opaque pointer for binary compatibility
-typedef void *nio_console;
-#endif
 
 #define NIO_KEY_UP 0x80
 #define NIO_KEY_DOWN 0x81
@@ -142,20 +135,6 @@ void nio_vram_grid_puts(int offset_x, int offset_y, int x, int y, const char *st
 	@param textColor text color
 */
 void nio_vram_grid_putc(int offset_x, int offset_y, int x, int y, char ch, unsigned char bgColor, unsigned char textColor);
-
-/** Loads a console from a file on flash storage.
-    @param path File path
-	@param c Console
-	@return true if successful
-*/
-bool nio_load(const char* path, nio_console* c);
-
-/** Saves a console to a file on flash storage.
-	@param path File path
-	@param c Console
-	@return true if successful
-*/
-bool nio_save(const char* path, const nio_console* c);
 
 /** Sets a default console that will be used for all functions without console argument, e.g. nio_puts()
 	@param c Console
@@ -341,32 +320,6 @@ int nio_getche(nio_console* c);
 */
 int nio__getche(void);
 
-/** Checks if there is data available at the serial port.
-	@return true if new data is available.
-*/
-bool uart_ready(void);
-
-/** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
-*/
-char uart_getchar(void);
-
-/** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
-*/
-char* uart_gets(char* str);
-
-/** See [putchar](http://www.cplusplus.com/reference/clibrary/cstdio/putchar/)
-*/
-char uart_putchar(char character);
-
-/** See [puts](http://www.cplusplus.com/reference/clibrary/cstdio/puts/)
-    \note This DOES NOT append a newline (\\n) character.
-*/
-int uart_puts(const char *str);
-
-/** See [printf](http://www.cplusplus.com/reference/clibrary/cstdio/printf/)
-*/
-void uart_printf(char *format, ...);
-
 /** Returns the current time.
 	@return Current RTC time
 */
@@ -460,42 +413,5 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
 void nio_cursor_custom(nio_console* c, const unsigned char cursor_data[6]);
-
-#ifdef NIO_KEEP_COMPATIBILITY
-#define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,true)
-#define nio_DrawConsole                 nio_fflush
-#define nio_Clear                       nio_clear
-#define nio_PrintChar(a,b)              nio_fputc(b,a)
-#define nio_EnableDrawing               nio_drawing_enabled
-#define nio_PrintStr(a,b)               nio_fputs(b,a)
-#define nio_GetChar                     nio_fgetc
-#define nio_GetStr(a,b)                 nio_fgets(b,1000,a)
-#define nio_SetColor                    nio_color
-#define nio_CleanUp                     nio_free
-#define setPixel                        nio_pixel_set
-#define putChar                         nio_pixel_putc
-#define putStr                          nio_pixel_puts
-#define nio_drawstr                     nio_grid_puts
-#define nio_drawch                      nio_grid_putc
-#define nio_ScrollDown                  nio_scroll
-#define nio_DrawChar                    nio_csl_drawchar
-#define nio_SetChar                     nio_csl_savechar
-#define nio_printf                      nio_fprintf
-
-#define uart_putc                       uart_putchar
-#define uart_getc                       uart_getchar
-
-#define get_current_time				nio_time_get
-#define nio_DrawCursor					nio_cursor_draw
-#define nio_EraseCursor					nio_cursor_erase
-#define nio_DrawBlinkingCursor			nio_cursor_blinking_draw
-#define nio_ResetBlinkingCursor			nio_cursor_blinking_reset
-#define nio_EnableCursor				nio_cursor_enable
-#define nio_EnableCursorBlink			nio_cursor_blinking_enable
-#define nio_SetCursorBlinkDuration		nio_cursor_blinking_duration
-#define nio_SetCursorType				nio_cursor_type
-#define nio_SetCursorWidth				nio_cursor_width
-#define nio_SetCursorCustom				nio_cursor_custom
-#endif
 
 #endif
