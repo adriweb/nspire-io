@@ -53,7 +53,6 @@
 #define SCREEN_WIDTH    gfx_lcdWidth
 #define SCREEN_HEIGHT   gfx_lcdHeight
 
-#define idle() 0 // Power saver on the Nspire, useless on the Prizm
 void wait_key_pressed(void); // blocks until a key is pressed
 bool any_key_pressed(void); // non-blocking, TRUE if any key pressed
 
@@ -71,6 +70,8 @@ void nio_scrbuf_clear();
 */
 void nio_scrbuf_free();
 
+char* nio_get_back_buffer();
+
 // These functions are the same on all platforms...
 
 void nio_set_global_color(unsigned int color);
@@ -79,6 +80,6 @@ void nio_vram_fill(unsigned x, unsigned y, unsigned w, unsigned h);
 void nio_vram_draw(void);
 void nio_vram_scroll(unsigned x, unsigned y, unsigned w, unsigned h, unsigned scroll);
 unsigned int nio_cursor_clock(void);
-char nio_ascii_get(int* adaptive_cursor_state);
+unsigned char nio_ascii_get(uint8_t* adaptive_cursor_state);
 
 #endif

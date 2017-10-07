@@ -142,9 +142,9 @@ unsigned nio_time_get() {
     return (unsigned int) rtc_Time();
 }
 
-bool second = false, alpha = false;
-char nio_ascii_get(int* adaptive_cursor_state)
+unsigned char nio_ascii_get(uint8_t* adaptive_cursor_state)
 {
+    static bool second = false, alpha = false;
     sk_key_t key = os_GetCSC();
 
     if (key == sk_2nd) {
@@ -167,51 +167,56 @@ char nio_ascii_get(int* adaptive_cursor_state)
     switch (key)
     {
         case sk_Mode  : return 0;
-        case sk_Clear : return (char) NIO_KEY_ESC;
+        case sk_Clear : return NIO_KEY_ESC;
 
-        case sk_DecPnt: return (char) (alpha ?                 ':'  : '.');
-        case sk_Chs   : return (char) (alpha ?                 '?'  : '-');
-        case sk_0     : return (char) (alpha ?                 ' '  : '0');
-        case sk_1     : return (char) (alpha ? (second ? 'Y' : 'y') : '1');
-        case sk_2     : return (char) (alpha ? (second ? 'Z' : 'z') : '2');
-        case sk_3     : return (char) (alpha ?                 '@'  : '3');
-        case sk_4     : return (char) (alpha ? (second ? 'T' : 't') : '4');
-        case sk_5     : return (char) (alpha ? (second ? 'U' : 'u') : '5');
-        case sk_6     : return (char) (alpha ? (second ? 'V' : 'v') : '6');
-        case sk_7     : return (char) (alpha ? (second ? 'O' : 'o') : '7');
-        case sk_8     : return (char) (alpha ? (second ? 'P' : 'p') : '8');
-        case sk_9     : return (char) (alpha ? (second ? 'Q' : 'q') : '9');
+        case sk_DecPnt: return (unsigned char) (alpha ?                 ':'  : '.');
+        case sk_Chs   : return (unsigned char) (alpha ?                 '?'  : '-');
+        case sk_0     : return (unsigned char) (alpha ?                 ' '  : '0');
+        case sk_1     : return (unsigned char) (alpha ? (second ? 'Y' : 'y') : '1');
+        case sk_2     : return (unsigned char) (alpha ? (second ? 'Z' : 'z') : '2');
+        case sk_3     : return (unsigned char) (alpha ?                 '@'  : '3');
+        case sk_4     : return (unsigned char) (alpha ? (second ? 'T' : 't') : '4');
+        case sk_5     : return (unsigned char) (alpha ? (second ? 'U' : 'u') : '5');
+        case sk_6     : return (unsigned char) (alpha ? (second ? 'V' : 'v') : '6');
+        case sk_7     : return (unsigned char) (alpha ? (second ? 'O' : 'o') : '7');
+        case sk_8     : return (unsigned char) (alpha ? (second ? 'P' : 'p') : '8');
+        case sk_9     : return (unsigned char) (alpha ? (second ? 'Q' : 'q') : '9');
 
-        case sk_Math  : return (char) (alpha ? (second ? 'A' : 'a') :  1 );
-        case sk_Apps  : return (char) (alpha ? (second ? 'B' : 'b') :  1 );
-        case sk_Prgm  : return (char) (alpha ? (second ? 'C' : 'c') :  1 );
-        case sk_Recip : return (char) (alpha ? (second ? 'D' : 'd') : '\'');
-        case sk_Sin   : return (char) (alpha ? (second ? 'E' : 'e') :  1 );
-        case sk_Cos   : return (char) (alpha ? (second ? 'F' : 'f') :  1 );
-        case sk_Tan   : return (char) (alpha ? (second ? 'G' : 'g') :  1 );
-        case sk_Square: return (char) (alpha ? (second ? 'I' : 'i') : ';');
-        case sk_Comma : return (char) (alpha ? (second ? 'J' : 'j') : ',');
-        case sk_LParen: return (char) (alpha ? (second ? 'K' : 'k') : (second ? '{' : '('));
-        case sk_RParen: return (char) (alpha ? (second ? 'L' : 'l') : (second ? '}' : ')'));
-        case sk_Log   : return (char) (alpha ? (second ? 'N' : 'n') : '%');
-        case sk_Ln    : return (char) (alpha ? (second ? 'S' : 's') : '<');
-        case sk_Store : return (char) (alpha ? (second ? 'X' : 'x') : '>');
+        case sk_Math  : return (unsigned char) (alpha ? (second ? 'A' : 'a') :  0 );
+        case sk_Apps  : return (unsigned char) (alpha ? (second ? 'B' : 'b') :  0 );
+        case sk_Prgm  : return (unsigned char) (alpha ? (second ? 'C' : 'c') :  0 );
+        case sk_Recip : return (unsigned char) (alpha ? (second ? 'D' : 'd') : '\'');
+        case sk_Sin   : return (unsigned char) (alpha ? (second ? 'E' : 'e') :  0 );
+        case sk_Cos   : return (unsigned char) (alpha ? (second ? 'F' : 'f') :  0 );
+        case sk_Tan   : return (unsigned char) (alpha ? (second ? 'G' : 'g') :  0 );
+        case sk_Square: return (unsigned char) (alpha ? (second ? 'I' : 'i') : ';');
+        case sk_Comma : return (unsigned char) (alpha ? (second ? 'J' : 'j') : ',');
+        case sk_LParen: return (unsigned char) (alpha ? (second ? 'K' : 'k') : (second ? '{' : '('));
+        case sk_RParen: return (unsigned char) (alpha ? (second ? 'L' : 'l') : (second ? '}' : ')'));
+        case sk_Log   : return (unsigned char) (alpha ? (second ? 'N' : 'n') : '%');
+        case sk_Ln    : return (unsigned char) (alpha ? (second ? 'S' : 's') : '<');
+        case sk_Store : return (unsigned char) (alpha ? (second ? 'X' : 'x') : '>');
 
-        case sk_Add   : return (char) (alpha ?                 '"'  : '+');
-        case sk_Sub   : return (char) (alpha ? (second ? 'W' : 'w') : (second ? ']' : '-'));
-        case sk_Mul   : return (char) (alpha ? (second ? 'R' : 'r') : (second ? '[' : '*'));
-        case sk_Div   : return (char) (alpha ? (second ? 'M' : 'm') : '/');
-        case sk_Power : return (char) (alpha ? (second ? 'H' : 'h') : '^');
+        case sk_Add   : return (unsigned char) (alpha ?                 '"'  : '+');
+        case sk_Sub   : return (unsigned char) (alpha ? (second ? 'W' : 'w') : (second ? ']' : '-'));
+        case sk_Mul   : return (unsigned char) (alpha ? (second ? 'R' : 'r') : (second ? '[' : '*'));
+        case sk_Div   : return (unsigned char) (alpha ? (second ? 'M' : 'm') : '/');
+        case sk_Power : return (unsigned char) (alpha ? (second ? 'H' : 'h') : '^');
 
         case sk_Vars  : return '#';
         case sk_Yequ  : return '=';
         case sk_Del   : return '\b';
         case sk_Enter : return '\n';
-        case sk_Up    : return (char) NIO_KEY_UP;
-        case sk_Down  : return (char) NIO_KEY_DOWN;
+        case sk_Up    : return NIO_KEY_UP;
+        case sk_Down  : return NIO_KEY_DOWN;
 
         case sk_GraphVar: return 'X'; // why not
 
-        default: return 1; // no key pressed
+        default: return 0; // no key pressed
     }
+}
+
+char* nio_get_back_buffer()
+{
+    return (char*) (gfx_vram + LCD_WIDTH*LCD_HEIGHT); // back buffer since 8bpp
 }

@@ -219,10 +219,11 @@ nio_console* nio_get_default(void)
 	return nio_default;
 }
 
+static uint8_t adaptive_cursor_state = 0;
 int nio_getch(nio_console* csl)
 {
 	nio_console_private *c = *csl;
-	char tmp = 0;
+	unsigned char tmp = 0;
 	while(tmp == 0)
 	{
 		while(!any_key_pressed())
@@ -233,21 +234,14 @@ int nio_getch(nio_console* csl)
 				if(c->idle_callback(c->idle_callback_data) != 0)
 					return 0;
 			}
-			else
-			{
-                (void)idle();
-			}
 		}
 
 		nio_cursor_erase(csl);
 
-		{
-			int adaptive_cursor_state = 0;
-			tmp = nio_ascii_get(&adaptive_cursor_state);
+		tmp = nio_ascii_get(&adaptive_cursor_state);
 
-			if (c->cursor_type == 4)
-				nio_cursor_custom(csl, &adaptive_cursor[adaptive_cursor_state][0]);
-		}
+		if (c->cursor_type == 4)
+			nio_cursor_custom(csl, &adaptive_cursor[adaptive_cursor_state][0]);
 	}
 
 	return tmp;
@@ -260,7 +254,7 @@ int nio__getch(void)
 
 int nio_getche(nio_console* c)
 {
-	char tmp = nio_getch(c);
+	int tmp = nio_getch(c);
 	nio_fputc(tmp,c);
 	return tmp;
 }
@@ -357,12 +351,8 @@ int nio_putchar(int character)
 
 int nio_fputs(const char* str, nio_console* c)
 {
-	int len = strlen(str);
-	int i;
-	for(i = 0; i < len; i++)
-	{
-		nio_fputc(str[i], c);
-	}
+    while (str && *str)
+        nio_fputc(*str++, c);
     return 1;
 }
 
@@ -376,11 +366,12 @@ int nio_puts(const char* str)
 int nio_fprintf(nio_console* c, const char *format, ...)
 {
 	va_list arglist;
-	char buf[500];
-	memset(buf,'\0',sizeof(buf));
+	int len = 0;
+	char* buf = nio_get_back_buffer();
     va_start(arglist,format);
-    if(vsprintf(buf,format,arglist) < 0)
+	if((len = vsprintf(buf,format,arglist)) < 0)
 		abort();
+	buf[len] = 0;
     nio_fputs(buf,c);
     va_end(arglist);
     return strlen(buf);
@@ -388,12 +379,13 @@ int nio_fprintf(nio_console* c, const char *format, ...)
 
 int nio_printf(const char *format, ...)
 {
-    char buf[500];
 	va_list arglist;
-	memset(buf,'\0',sizeof(buf));
+	int len = 0;
+	char* buf = nio_get_back_buffer();
     va_start(arglist,format);
-    if(vsprintf(buf,format,arglist) < 0)
+    if((len = vsprintf(buf,format,arglist)) < 0)
 		abort();
+	buf[len] = 0;
     nio_fputs(buf, nio_default);
     va_end(arglist);
     return strlen(buf);
@@ -435,8 +427,9 @@ int nio_read(nio_console *csl, char* str, int num)
 {
 	nio_console_private *c = *csl;
 	int str_pos = 0;
-	int i = 0, cursor;
-	static char char_repeat = 0, tmp = 0;
+	int i = 0;
+	uint8_t cursor;
+	static unsigned char char_repeat = 0, tmp = 0;
 
 	if (num < 1)
 		return 0;
@@ -616,8 +609,8 @@ void nio_free(nio_console* csl)
 	if (*csl) {
 		unsigned int i;
 		nio_console_private *c = *csl;
-		if (c->drawing_enabled)
-			nio_fflush(csl);
+		//if (c->drawing_enabled)
+		//	nio_fflush(csl);
 		free(c->data);
 		free(c->color);
 		free(c->input_buf);

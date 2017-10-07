@@ -83,7 +83,7 @@ int main(void)
             nio_printf(" Cursor type is now set to vertical bar cursor.\n");
         }
         if (!strcmp(text, "setcursor 3")) {
-            const char cursor[6] = {0x38,0x42,0x41,0x42,0x38,0xFF};
+            const unsigned char cursor[6] = {0x38,0x42,0x41,0x42,0x38,0xFF};
             nio_cursor_type(&c1, NIO_CURSOR_CUSTOM);
             nio_cursor_custom(&c1, (unsigned char*) cursor);
             nio_printf(" Cursor type is now set to custom cursor.\n");
