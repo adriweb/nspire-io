@@ -193,15 +193,15 @@ char nio_ascii_get(int* adaptive_cursor_state)
         case sk_Tan   : return (char) (alpha ? (second ? 'G' : 'g') :  1 );
         case sk_Square: return (char) (alpha ? (second ? 'I' : 'i') : ';');
         case sk_Comma : return (char) (alpha ? (second ? 'J' : 'j') : ',');
-        case sk_LParen: return (char) (alpha ? (second ? 'K' : 'k') : '(');
-        case sk_RParen: return (char) (alpha ? (second ? 'L' : 'l') : ')');
+        case sk_LParen: return (char) (alpha ? (second ? 'K' : 'k') : (second ? '{' : '('));
+        case sk_RParen: return (char) (alpha ? (second ? 'L' : 'l') : (second ? '}' : ')'));
         case sk_Log   : return (char) (alpha ? (second ? 'N' : 'n') : '%');
         case sk_Ln    : return (char) (alpha ? (second ? 'S' : 's') : '<');
         case sk_Store : return (char) (alpha ? (second ? 'X' : 'x') : '>');
 
         case sk_Add   : return (char) (alpha ?                 '"'  : '+');
-        case sk_Sub   : return (char) (alpha ? (second ? 'W' : 'w') : '-');
-        case sk_Mul   : return (char) (alpha ? (second ? 'R' : 'r') : '*');
+        case sk_Sub   : return (char) (alpha ? (second ? 'W' : 'w') : (second ? ']' : '-'));
+        case sk_Mul   : return (char) (alpha ? (second ? 'R' : 'r') : (second ? '[' : '*'));
         case sk_Div   : return (char) (alpha ? (second ? 'M' : 'm') : '/');
         case sk_Power : return (char) (alpha ? (second ? 'H' : 'h') : '^');
 
