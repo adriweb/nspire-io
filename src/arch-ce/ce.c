@@ -144,79 +144,76 @@ unsigned int nio_cursor_clock(void) {
     return (unsigned int) rtc_Time();
 }
 
-/*  adaptive_cursor_state
-   	 block cursor
-	 arrow cursor
-	 'A' cursor
-	 'a' cursor
-	 '#' cursor
- */
+bool second = false, alpha = false;
 char nio_ascii_get(int* adaptive_cursor_state)
 {
-    bool second, alpha;
+    sk_key_t key = os_GetCSC();
 
-    kb_Scan();
-
-    second = (bool) (kb_Data[1] & kb_2nd);
-    alpha  = (bool) (kb_Data[2] & kb_Alpha);
-
-    if (alpha && second) {
-        *adaptive_cursor_state = 2;
-    } else if (alpha) {
-        *adaptive_cursor_state = 3;
-    } else if (second) {
-        *adaptive_cursor_state = 1;
-    } else {
-        *adaptive_cursor_state = 0;
+    if (key == sk_2nd) {
+        second = (bool)!second;
+    }
+    if (key == sk_Alpha) {
+        alpha = (bool)!alpha;
     }
 
-    if (kb_Data[1] & kb_Mode ) return 0;
-    if (kb_Data[6] & kb_Clear) return (char) NIO_KEY_ESC;
+    if (alpha && second) {
+        *adaptive_cursor_state = 2; // uppercase alpha cursor
+    } else if (alpha) {
+        *adaptive_cursor_state = 3; // lowercase alpha cursor
+    } else if (second) {
+        *adaptive_cursor_state = 1; // arrow cursor
+    } else {
+        *adaptive_cursor_state = 0; // block cursor
+    }
 
-    if (kb_Data[4] & kb_DecPnt)return (char) (alpha ? ':' : '.');
-    if (kb_Data[5] & kb_Chs  ) return (char) (alpha ? '?' : '-');
-    if (kb_Data[3] & kb_0    ) return (char) (alpha ? ' ' : '0');
-    if (kb_Data[3] & kb_1    ) return (char) (alpha ? (second ? 'Y' : 'y') : '1');
-    if (kb_Data[4] & kb_2    ) return (char) (alpha ? (second ? 'Z' : 'z') : '2');
-    if (kb_Data[5] & kb_3    ) return (char) (alpha ? '@' : '3');
-    if (kb_Data[3] & kb_4    ) return (char) (alpha ? (second ? 'T' : 't') : '4');
-    if (kb_Data[4] & kb_5    ) return (char) (alpha ? (second ? 'U' : 'u') : '5');
-    if (kb_Data[5] & kb_6    ) return (char) (alpha ? (second ? 'V' : 'v') : '6');
-    if (kb_Data[3] & kb_7    ) return (char) (alpha ? (second ? 'O' : 'o') : '7');
-    if (kb_Data[4] & kb_8    ) return (char) (alpha ? (second ? 'P' : 'p') : '8');
-    if (kb_Data[5] & kb_9    ) return (char) (alpha ? (second ? 'Q' : 'q') : '9');
+    switch (key)
+    {
+        case sk_Mode  : return 0;
+        case sk_Clear : return (char) NIO_KEY_ESC;
 
-    if (kb_Data[2] & kb_Math ) return (char) (alpha ? (second ? 'A' : 'a') :  1 );
-    if (kb_Data[3] & kb_Apps ) return (char) (alpha ? (second ? 'B' : 'b') :  1 );
-    if (kb_Data[4] & kb_Prgm ) return (char) (alpha ? (second ? 'C' : 'c') :  1 );
-    if (kb_Data[2] & kb_Recip) return (char) (alpha ? (second ? 'D' : 'd') : '\'');
-    if (kb_Data[3] & kb_Sin  ) return (char) (alpha ? (second ? 'E' : 'e') :  1 );
-    if (kb_Data[4] & kb_Cos  ) return (char) (alpha ? (second ? 'F' : 'f') :  1 );
-    if (kb_Data[5] & kb_Tan  ) return (char) (alpha ? (second ? 'G' : 'g') :  1 );
-    if (kb_Data[2] & kb_Square)return (char) (alpha ? (second ? 'I' : 'i') : ';');
-    if (kb_Data[3] & kb_Comma) return (char) (alpha ? (second ? 'J' : 'j') : ',');
-    if (kb_Data[4] & kb_LParen)return (char) (alpha ? (second ? 'K' : 'k') : '(');
-    if (kb_Data[5] & kb_RParen)return (char) (alpha ? (second ? 'L' : 'l') : ')');
-    if (kb_Data[2] & kb_Log  ) return (char) (alpha ? (second ? 'N' : 'n') : '%');
-    if (kb_Data[2] & kb_Ln   ) return (char) (alpha ? (second ? 'S' : 's') : '<');
-    if (kb_Data[2] & kb_Store) return (char) (alpha ? (second ? 'X' : 'x') : '>');
+        case sk_DecPnt: return (char) (alpha ?                 ':'  : '.');
+        case sk_Chs   : return (char) (alpha ?                 '?'  : '-');
+        case sk_0     : return (char) (alpha ?                 ' '  : '0');
+        case sk_1     : return (char) (alpha ? (second ? 'Y' : 'y') : '1');
+        case sk_2     : return (char) (alpha ? (second ? 'Z' : 'z') : '2');
+        case sk_3     : return (char) (alpha ?                 '@'  : '3');
+        case sk_4     : return (char) (alpha ? (second ? 'T' : 't') : '4');
+        case sk_5     : return (char) (alpha ? (second ? 'U' : 'u') : '5');
+        case sk_6     : return (char) (alpha ? (second ? 'V' : 'v') : '6');
+        case sk_7     : return (char) (alpha ? (second ? 'O' : 'o') : '7');
+        case sk_8     : return (char) (alpha ? (second ? 'P' : 'p') : '8');
+        case sk_9     : return (char) (alpha ? (second ? 'Q' : 'q') : '9');
 
-    if (kb_Data[3] & kb_GraphVar) return 'X'; // why not
+        case sk_Math  : return (char) (alpha ? (second ? 'A' : 'a') :  1 );
+        case sk_Apps  : return (char) (alpha ? (second ? 'B' : 'b') :  1 );
+        case sk_Prgm  : return (char) (alpha ? (second ? 'C' : 'c') :  1 );
+        case sk_Recip : return (char) (alpha ? (second ? 'D' : 'd') : '\'');
+        case sk_Sin   : return (char) (alpha ? (second ? 'E' : 'e') :  1 );
+        case sk_Cos   : return (char) (alpha ? (second ? 'F' : 'f') :  1 );
+        case sk_Tan   : return (char) (alpha ? (second ? 'G' : 'g') :  1 );
+        case sk_Square: return (char) (alpha ? (second ? 'I' : 'i') : ';');
+        case sk_Comma : return (char) (alpha ? (second ? 'J' : 'j') : ',');
+        case sk_LParen: return (char) (alpha ? (second ? 'K' : 'k') : '(');
+        case sk_RParen: return (char) (alpha ? (second ? 'L' : 'l') : ')');
+        case sk_Log   : return (char) (alpha ? (second ? 'N' : 'n') : '%');
+        case sk_Ln    : return (char) (alpha ? (second ? 'S' : 's') : '<');
+        case sk_Store : return (char) (alpha ? (second ? 'X' : 'x') : '>');
 
-    if (kb_Data[6] & kb_Add  ) return (char) (alpha ? '"' : '+');
-    if (kb_Data[6] & kb_Sub  ) return (char) (alpha ? (second ? 'W' : 'w') : '-');
-    if (kb_Data[6] & kb_Mul  ) return (char) (alpha ? (second ? 'R' : 'r') : '*');
-    if (kb_Data[6] & kb_Div  ) return (char) (alpha ? (second ? 'M' : 'm') : '/');
-    if (kb_Data[6] & kb_Power) return (char) (alpha ? (second ? 'H' : 'h') : '^');
+        case sk_Add   : return (char) (alpha ?                 '"'  : '+');
+        case sk_Sub   : return (char) (alpha ? (second ? 'W' : 'w') : '-');
+        case sk_Mul   : return (char) (alpha ? (second ? 'R' : 'r') : '*');
+        case sk_Div   : return (char) (alpha ? (second ? 'M' : 'm') : '/');
+        case sk_Power : return (char) (alpha ? (second ? 'H' : 'h') : '^');
 
-    // Special chars
-    if (kb_Data[5] & kb_Vars ) return '#';
-    if (kb_Data[1] & kb_Yequ ) return '=';
-    if (kb_Data[1] & kb_Del  ) return '\b';
-    if (kb_Data[6] & kb_Enter) return '\n';
-    if (kb_Data[7] & kb_Up   ) return (char) NIO_KEY_UP;
-    if (kb_Data[7] & kb_Down ) return (char) NIO_KEY_DOWN;
+        case sk_Vars  : return '#';
+        case sk_Yequ  : return '=';
+        case sk_Del   : return '\b';
+        case sk_Enter : return '\n';
+        case sk_Up    : return (char) NIO_KEY_UP;
+        case sk_Down  : return (char) NIO_KEY_DOWN;
 
-    // no key pressed
-    return 1;
+        case sk_GraphVar: return 'X'; // why not
+
+        default: return 1; // no key pressed
+    }
 }

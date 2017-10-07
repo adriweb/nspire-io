@@ -345,7 +345,7 @@ int nio_getch(nio_console* csl)
 			}
 			else
 			{
-				idle();
+                (void)idle();
 			}
 		}
 
