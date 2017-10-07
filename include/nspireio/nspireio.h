@@ -277,7 +277,7 @@ char* nio_fgets(char* str, int num, nio_console* c);
 
 /** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
 */
-char* nio_gets(char* str) __attribute__((deprecated));
+char* nio_gets(char* str);// __attribute__((deprecated));
 
 /** Like [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/), but with a maximum length parameter
 */
@@ -285,19 +285,23 @@ char* nio_getsn(char* str, int num);
 
 /** See [fscanf](http://www.cplusplus.com/reference/cstdio/fscanf/)
 */
+/*
 #define nio_fscanf(c, format, ...) \
 ({ \
 	char tmp[100]; \
 	nio_fgets(tmp,100,c); \
 	sscanf(tmp,format, ##__VA_ARGS__); \
 })
+*/
 
 /** See [scanf](http://www.cplusplus.com/reference/cstdio/scanf/)
 */
+/*
 #define nio_scanf(format, ...) \
 ({ \
 	nio_fscanf(nio_get_default(),format, ##__VA_ARGS__); \
 })
+*/
 
 //int nio_vfprintf(nio_console* c, const char* format, va_list* arglist);
 

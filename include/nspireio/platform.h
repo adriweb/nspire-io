@@ -65,7 +65,7 @@ char uart_getchar(void);
 /** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
 	@return Destination
 */
-char* uart_gets(char* str) __attribute__((deprecated));
+char* uart_gets(char* str);// __attribute__((deprecated));
 
 /** Like [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/), but with a maximum length parameter
 */

@@ -87,6 +87,7 @@ void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, con
 
 bool nio_load(const char* path, nio_console* csl)
 {
+#ifndef CEBUILD
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
 	if (!c) goto err2;
 	*c = (nio_console_private){0};
@@ -147,11 +148,13 @@ err1:
 	fclose(f);
 err2:
 	nio_free(csl);
+#endif
 	return false;
 }
 
 bool nio_save(const char* path, const nio_console* csl)
 {
+#ifndef CEBUILD
 	nio_console_private *c = *csl;
 	FILE* f = fopen(path,"wb");
 	if (!f) return false;
@@ -188,7 +191,7 @@ bool nio_save(const char* path, const nio_console* csl)
 	}
 
 	if(fclose(f) == EOF) return false;
-
+#endif
 	return true;
 }
 
@@ -206,9 +209,10 @@ void nio_set_idle_callback(nio_console* csl, int (*callback)(void*), void* data)
 
 bool nio_init(nio_console* csl, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled)
 {
+	uint8_t p;
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
 	if (!c) goto err;
-	*c = (nio_console_private){0};
+	memset(c, 0, sizeof(nio_console_private));
 	++csl_count;
 
 	c->max_x = size_x;
@@ -236,7 +240,7 @@ bool nio_init(nio_console* csl, const int size_x, const int size_y, const int of
 	c->cursor_type = 4; // Defaults to "adaptive" cursor
 	c->cursor_line_width = 1;
 	
-	for (unsigned int p = 0; p <= 5; p++)
+	for (p = 0; p <= 5; p++)
 		c->cursor_custom_data[p] = 0xFF;
 
 	c->history_line = -1;
@@ -265,10 +269,10 @@ int nio_fflush(nio_console* csl)
 
 void nio_clear(nio_console* csl)
 {
+	int i;
 	nio_console_private *c = *csl;
 	unsigned short color = (c->default_background_color << 8) | c->default_foreground_color;
 	memset(c->data,0,c->max_x*c->max_y);
-	int i;
 	for(i = 0; i < c->max_x*c->max_y; i++)
 	{
 		c->color[i] = color;
@@ -344,13 +348,16 @@ int nio_getch(nio_console* csl)
 				idle();
 			}
 		}
-		
+
 		nio_cursor_erase(csl);
-		int adaptive_cursor_state = 0;
-		tmp = nio_ascii_get(&adaptive_cursor_state);
-		
-		if(c->cursor_type == 4)
-			nio_cursor_custom(csl,&adaptive_cursor[adaptive_cursor_state][0]);
+
+		{
+			int adaptive_cursor_state = 0;
+			tmp = nio_ascii_get(&adaptive_cursor_state);
+
+			if (c->cursor_type == 4)
+				nio_cursor_custom(csl, &adaptive_cursor[adaptive_cursor_state][0]);
+		}
 	}
 
 	return tmp;
@@ -446,7 +453,8 @@ int nio_fputc(int character, nio_console* csl)
 
 int nio_write(nio_console *c, char *ptr, int len)
 {
-	for (int i = len; i > 0; ++ptr, --i)
+	int i;
+	for (i = len; i > 0; ++ptr, --i)
 		nio_vram_fputc(*ptr, c);
 	nio_vram_draw();
 	return len;
@@ -477,12 +485,12 @@ int nio_puts(const char* str)
 
 int nio_fprintf(nio_console* c, const char *format, ...)
 {
-    char buf[1000];
-    memset(buf,'\0',sizeof(buf));
-    va_list arglist;
+	va_list arglist;
+	char buf[500];
+	memset(buf,'\0',sizeof(buf));
     va_start(arglist,format);
-    if(vsnprintf(buf,1000,format,arglist) < 0)
-		exit_with_error(__FUNCTION__,"vsnprintf failed");
+    if(vsprintf(buf,format,arglist) < 0)
+		exit_with_error("nio_fprintf","vsnprintf failed");
     nio_fputs(buf,c);
     va_end(arglist);
     return strlen(buf);
@@ -490,12 +498,12 @@ int nio_fprintf(nio_console* c, const char *format, ...)
 
 int nio_printf(const char *format, ...)
 {
-    char buf[1000];
-    memset(buf,'\0',sizeof(buf));
-    va_list arglist;
+    char buf[500];
+	va_list arglist;
+	memset(buf,'\0',sizeof(buf));
     va_start(arglist,format);
-    if(vsnprintf(buf,1000,format,arglist) < 0)
-		exit_with_error(__FUNCTION__,"vsnprintf failed");
+    if(vsprintf(buf,format,arglist) < 0)
+		exit_with_error("nio_printf","vsnprintf failed");
     nio_fputs(buf, nio_default);
     va_end(arglist);
     return strlen(buf);
@@ -536,11 +544,13 @@ int nio_getchar(void)
 int nio_read(nio_console *csl, char* str, int num)
 {
 	nio_console_private *c = *csl;
-	
+	int str_pos = 0;
+	int i = 0, cursor;
+	static char char_repeat = 0, tmp = 0;
+
 	if (num < 1)
 		return 0;
 
-	int str_pos = 0;
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
 	
@@ -549,8 +559,6 @@ int nio_read(nio_console *csl, char* str, int num)
 		return str_pos;
 	}
 	
-	int i = 0, cursor;
-	static char char_repeat = 0, tmp = 0;
 	while(1)
 	{
 		nio_cursor_draw(csl);
@@ -622,12 +630,14 @@ int nio_read(nio_console *csl, char* str, int num)
 				}
 				++i;
 
-				const char *line = c->history[c->history_line];
-				while(*line && *line != '\n')
 				{
-					queue_put(c->input_buf, *line);
-					nio_fputc(*line++, csl);
-					++i;
+					const char* line = c->history[c->history_line];
+					while (*line && *line != '\n')
+					{
+						queue_put(c->input_buf, *line);
+						nio_fputc(*line++, csl);
+						++i;
+					}
 				}
 			}
 		}
@@ -657,8 +667,9 @@ int nio_read(nio_console *csl, char* str, int num)
 		char *s;
 		if ((s = strndup(str, str_pos)))
 		{
+			unsigned int j;
 			free(c->history[HISTORY_LINES - 1]);
-			for(unsigned int j = HISTORY_LINES - 1; j > 0; --j)
+			for(j = HISTORY_LINES - 1; j > 0; --j)
 				c->history[j] = c->history[j - 1];
 			c->history[0] = s;
 		}
@@ -713,13 +724,13 @@ char* nio_getsn(char* str, int num)
 void nio_free(nio_console* csl)
 {
 	if (*csl) {
+		unsigned int i;
 		nio_console_private *c = *csl;
 		if (c->drawing_enabled)
 			nio_fflush(csl);
 		free(c->data);
 		free(c->color);
 		free(c->input_buf);
-		unsigned int i;
 		for(i = 0; i < HISTORY_LINES; ++i)
 			free(c->history[i]);
 

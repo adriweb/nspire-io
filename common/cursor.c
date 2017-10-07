@@ -38,13 +38,13 @@ void nio_cursor_draw(nio_console* csl)
 	const unsigned short cursor_x_start = c->offset_x + c->cursor_x*NIO_CHAR_WIDTH;
 	const unsigned short cursor_y_start = c->offset_y + (c->cursor_y*NIO_CHAR_HEIGHT) + NIO_CHAR_HEIGHT;
 
-	if((c->drawing_enabled) && (c->cursor_enabled)) {
+	if((c->drawing_enabled) && (c->cursor_enabled))
+	{
+		int i, j;
 		if (!((c->cursor_type >= 0) && (c->cursor_type <= 4))) {
 			// Set the cursor type to a valid one
 			c->cursor_type = 0;
 		}
-
-		int i, j;
 
 		if (c->cursor_type == 0) {
 			// Draw a box for the cursor
@@ -103,16 +103,20 @@ void nio_cursor_draw(nio_console* csl)
 					c->cursor_custom_data[p] = 0xFF;
 			}
 
-			// Draw it!
-			int pixelOn;
-			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
-				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
+				// Draw it!
+				int pixelOn;
+				for (i = 0; i < NIO_CHAR_WIDTH; i++)
 				{
-					pixelOn = c->cursor_custom_data[i] << j;
-					pixelOn = pixelOn & 0x80 ;
-					if (pixelOn)   nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j,foreground_color);
-					else if(!pixelOn)  nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j,background_color);
+					for (j = NIO_CHAR_HEIGHT; j > 0; j--)
+					{
+						pixelOn = c->cursor_custom_data[i] << j;
+						pixelOn = pixelOn & 0x80;
+						if (pixelOn)
+							nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j, foreground_color);
+						else if (!pixelOn)
+							nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j, background_color);
+					}
 				}
 			}
 		}
