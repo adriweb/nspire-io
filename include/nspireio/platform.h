@@ -37,7 +37,6 @@
 
 #include "platform-ce.h"
 
-
 // These functions are the same on all platforms...
 
 void nio_set_global_color(unsigned int color);

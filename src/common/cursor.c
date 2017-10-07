@@ -159,7 +159,7 @@ void nio_cursor_blinking_draw(nio_console* csl)
 	if (!c->cursor_blink_enabled) return;
 	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = nio_cursor_clock();
 	if (c->cursor_blink_duration == 0) c->cursor_blink_duration = 1;
-	
+
 	if ((nio_cursor_clock() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
 		if (c->cursor_blink_status)
 			nio_cursor_draw(csl);

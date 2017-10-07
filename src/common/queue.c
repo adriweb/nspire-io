@@ -49,7 +49,7 @@ void queue_put(queue* q, char val)
 char queue_get_top(queue* q)
 {
 	char val;
-	
+
 	if(q->count <= 0)
 		return -1;
 	else
@@ -57,14 +57,14 @@ char queue_get_top(queue* q)
 		val = q->data[q->end--];
 		q->count--;
 	}
-	
+
 	return val;
 }
 
 char queue_get(queue* q)
 {
 	char val;
-	
+
 	if(q->count <= 0)
 		return -1;
 	else
@@ -73,7 +73,7 @@ char queue_get(queue* q)
 		q->start = (q->start + 1) % QUEUE_SIZE;
 		q->count--;
 	}
-	
+
 	return val;
 }
 

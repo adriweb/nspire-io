@@ -370,10 +370,10 @@ void nio_cursor_blinking_duration(nio_console* c, int duration);
 	Prompt window), 2 is a vertical bar cursor (like a regular text box),
 	3 is a custom cursor that is set via nio_cursor_custom, and 4 is an
 	adaptive cursor: It shows the current state of shift/ctrl/caps (default).
-	
+
 	If you specify an invalid value, NspireIO will silenty fail and set the
 	cursor type to 0, a block cursor.
-	
+
 	You may also use the predefined types as arguments. (NIO_CURSOR_*)
 */
 void nio_cursor_type(nio_console* c, int cursor_type);
@@ -383,19 +383,19 @@ void nio_cursor_type(nio_console* c, int cursor_type);
 	@param cursor_width The cursor line width. This only applies to cursors
 	1 and 2 (underscore and vertical bar). All others cursor types will not
 	be affected by this setting.
-	
+
 	For the underscore cursor, it must be greater than 0 and less than or
 	equal to CHAR_HEIGHT (as defined by	charmap.h). At the time of writing,
 	CHAR_HEIGHT is 8. Therefore, for an underscore cursor,
 	0 < cursor_width <= 8.
-	
+
 	For a vertical bar cursor, it must be greater than 0 and less than or
 	equal to CHAR_WIDTH (as defined by charmap.h). At the time of writing,
 	CHAR_WIDTH is 6. Therefore, for a vertical bar cursor, 0 < cursor_width < 6.
-	
+
 	If you wish to draw a blank cursor, you probably should disable the cursor
 	altogether with nio_cursor_enable(nio_console, false).
-	
+
 	Note that if you specify an out-of-range value, NspireIO will silently fail
 	and reset the cursor width to 1.
 */
@@ -407,7 +407,7 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 	array. This pretty much uses the format (and the drawing code) for character
 	drawing, so take a look at charmap.h for examples. Note that the characters
 	in charmap.h are truncated, so they will display differently.
-	
+
 	By default, if this is not specified and the cursor type is set to the
 	custom cursor type (3), the custom cursor will be set to
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).

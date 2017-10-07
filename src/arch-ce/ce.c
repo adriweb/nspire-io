@@ -25,7 +25,6 @@
  * Functions for CE platform
  */
 
-
 #include "../include/nspireio/platform.h"
 #include "../include/nspireio/nspireio.h"
 

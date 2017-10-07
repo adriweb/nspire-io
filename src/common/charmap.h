@@ -24,7 +24,7 @@
  *
  * This file contains all characters.
  */
- 
+
 #ifndef CHARMAP_H
 #define CHARMAP_H
 

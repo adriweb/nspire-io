@@ -24,7 +24,7 @@
  *
  * Header for CE platform
  */
- 
+
 #ifndef CE_H
 #define CE_H
 
@@ -52,7 +52,6 @@ void wait_key_pressed(void); // blocks until a key is pressed
 bool any_key_pressed(void); // non-blocking, TRUE if any key pressed
 
 #define strerror(errno) "errno"
-
 
 /** Initializes double buffering.
 */

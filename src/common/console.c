@@ -106,19 +106,19 @@ bool nio_init(nio_console* csl, int size_x, int size_y, int offset_x, int offset
 
 	c->max_x = size_x;
 	c->max_y = size_y;
-	
+
 	c->offset_x = offset_x;
 	c->offset_y = offset_y;
-	
+
 	c->drawing_enabled = drawing_enabled;
 	c->default_background_color = background_color;
 	c->default_foreground_color = foreground_color;
-	
+
 	c->data = malloc(c->max_x*c->max_y);
 	if (!c->data) goto err;
 	c->color = malloc(c->max_x*c->max_y*2);
 	if (!c->color) goto err;
-	
+
 	c->input_buf = malloc(sizeof(queue));
 	if (!c->input_buf) goto err;
 	queue_init(c->input_buf);
@@ -128,7 +128,7 @@ bool nio_init(nio_console* csl, int size_x, int size_y, int offset_x, int offset
 	c->cursor_blink_duration = 1;
 	c->cursor_type = 4; // Defaults to "adaptive" cursor
 	c->cursor_line_width = 1;
-	
+
 	for (p = 0; p <= 5; p++)
 		c->cursor_custom_data[p] = 0xFF;
 
@@ -187,7 +187,7 @@ void nio_scroll(nio_console* csl)
 		nio_set_global_color(c->default_background_color);
 		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT);
 	}
-	
+
 	if(c->cursor_y > 0)
 		c->cursor_y--;
 	c->cursor_x = 0;
@@ -198,10 +198,10 @@ void nio_vram_csl_drawchar(nio_console* csl, int pos_x, int pos_y)
 	nio_console_private *c = *csl;
 	char ch = c->data[pos_y*c->max_x+pos_x];
 	unsigned short color = c->color[pos_y*c->max_x+pos_x];
-	
+
 	unsigned char background_color = color >> 8;
 	unsigned char foreground_color = color;
-	
+
 	nio_vram_grid_putc(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
 }
 
@@ -209,7 +209,7 @@ void nio_csl_savechar(nio_console* csl, char ch, int pos_x, int pos_y)
 {
 	nio_console_private *c = *csl;
 	unsigned short color = (c->default_background_color << 8) | c->default_foreground_color;
-	
+
 	c->data[pos_y*c->max_x+pos_x] = ch;
 	c->color[pos_y*c->max_x+pos_x] = color;
 }
@@ -305,16 +305,16 @@ int nio_vram_fputc(int character, nio_console* csl)
 	{
 		// Store char.
 		nio_csl_savechar(csl,character,c->cursor_x,c->cursor_y);
-		
+
 		// Draw it when bool draw is true
 		if(c->drawing_enabled) {
 			nio_vram_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 		}
-		
+
 		// Increment X cursor. It will be checked for validity next time.
 		c->cursor_x++;
 	}
-	
+
 	// Check if cursor is valid
 	if(c->cursor_x >= c->max_x)
 	{
@@ -443,12 +443,12 @@ int nio_read(nio_console *csl, char* str, int num)
 
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
-	
+
 	if(str_pos > 0)
 	{
 		return str_pos;
 	}
-	
+
 	while(1)
 	{
 		nio_cursor_draw(csl);
@@ -549,10 +549,10 @@ int nio_read(nio_console *csl, char* str, int num)
 			i++;
 		}
 	}
-	
+
 	for(; str_pos < num && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
-	
+
 	if (str[0] != '\n' && (!c->history[0] || strncmp(str, c->history[0], str_pos) || c->history[0][str_pos])) {
 		char *s;
 		if ((s = strndup(str, str_pos)))
@@ -566,7 +566,7 @@ int nio_read(nio_console *csl, char* str, int num)
 	}
 
 	c->history_line = -1;
-	
+
 	return str_pos;
 }
 
