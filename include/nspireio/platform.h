@@ -41,6 +41,10 @@
 #ifdef PRIZM
 	#include "platform-prizm.h"
 #endif
+#ifdef CEBUILD
+	#include "platform-ce.h"
+#endif
+
 
 
 // These functions are the same on all platforms...

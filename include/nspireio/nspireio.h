@@ -54,7 +54,7 @@ enum
 	NIO_COLOR_WHITE
 };
 
-#ifdef NSPIREIO_BUILD
+#if defined(NSPIREIO_BUILD) || defined(CEBUILD)
 
 /** console structure */
 typedef struct
