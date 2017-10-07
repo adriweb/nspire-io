@@ -1,6 +1,7 @@
 /**
  * @file platform.h
  * @author Julian Mackeben aka compu <compujuckel@googlemail.com>
+ *       + Adrien "Adriweb" Bertrand
  * @version 3.1
  *
  * @section LICENSE
@@ -33,9 +34,42 @@
 #define NIO_CHAR_WIDTH 6
 #define NIO_CHAR_HEIGHT 8
 
+// Put headers required for our platform here
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <tice.h>
+#include <graphx.h>
+#include <keypadc.h>
 
-#include "platform-ce.h"
+// Fullscreen definitions
+
+#define NIO_MAX_ROWS 30
+#define NIO_MAX_COLS 53
+
+#define SCREEN_WIDTH    gfx_lcdWidth
+#define SCREEN_HEIGHT   gfx_lcdHeight
+
+#define idle() 0 // Power saver on the Nspire, useless on the Prizm
+void wait_key_pressed(void); // blocks until a key is pressed
+bool any_key_pressed(void); // non-blocking, TRUE if any key pressed
+
+#define strerror(errno) "errno"
+
+/** Initializes double buffering.
+*/
+bool nio_scrbuf_init();
+
+/** Clears the screen buffer.
+*/
+void nio_scrbuf_clear();
+
+/** Frees the screenbuffer and restores the screen to its original state.
+*/
+void nio_scrbuf_free();
 
 // These functions are the same on all platforms...
 
