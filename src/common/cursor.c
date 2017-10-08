@@ -93,35 +93,23 @@ void nio_cursor_draw(nio_console* csl)
 					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j);
 				}
 			}
-		} else if (c->cursor_type == 3 || c->cursor_type == 4) {
-			// Draw a custom cursor
-			// This uses pretty much the same code as the regular character drawing
-
-			unsigned char background_color = color >> 8;
-
-			// Sanity check to make sure the user defined something for the character
-			if (c->cursor_custom_data == NULL) {
-				// Set the cursor to a full cursor
-				int p;
-				for(p = 0; p <= 5; p++)
-					c->cursor_custom_data[p] = 0xFF;
-			}
-
-			{
-				// Draw it!
-				int pixelOn;
-				for (i = 0; i < NIO_CHAR_WIDTH; i++)
-				{
-					for (j = NIO_CHAR_HEIGHT; j > 0; j--)
-					{
-						pixelOn = c->cursor_custom_data[i] << j;
-						pixelOn = pixelOn & 0x80;
-                        nio_set_global_color(pixelOn ? foreground_color : background_color);
-                        nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j);
-					}
-				}
-			}
-		}
+        } else if (c->cursor_type == 3 || c->cursor_type == 4) {
+            // Draw a custom cursor
+            // This uses pretty much the same code as the regular character drawing
+            unsigned char background_color = color >> 8;
+            int pixelOn;
+            // Draw it!
+            for (i = 0; i < NIO_CHAR_WIDTH; i++)
+            {
+                for (j = NIO_CHAR_HEIGHT; j > 0; j--)
+                {
+                    pixelOn = c->cursor_custom_data[i] << j;
+                    pixelOn = pixelOn & 0x80;
+                    nio_set_global_color(pixelOn ? foreground_color : background_color);
+                    nio_vram_pixel_set(cursor_x_start + i, cursor_y_start - j);
+                }
+            }
+        }
 	}
 	nio_vram_draw();
 }

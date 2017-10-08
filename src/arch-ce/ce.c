@@ -28,7 +28,7 @@
 #include "../include/nspireio/platform.h"
 #include "../include/nspireio/nspireio.h"
 
-bool any_key_pressed()
+bool any_key_pressed(void)
 {
     return kb_AnyKey();
 }
