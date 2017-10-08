@@ -1,7 +1,8 @@
 /**
  * @file nspireio.h
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 3.1
+ * @author  Adrien Bertrand aka Adriweb (CE port and mods)
+ * @version 4.0
  *
  * @section LICENSE
  *

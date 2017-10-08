@@ -3,6 +3,7 @@
 *.a
 *.tns
 
+cmake-build-debug/
 .idea/
 obj/
 *.hex
