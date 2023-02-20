@@ -163,6 +163,7 @@ void nio_cursor_blinking_reset(nio_console* csl)
 	nio_console_private *c = *csl;
 	if (!c->cursor_blink_enabled) return;
 	c->cursor_blink_timestamp = nio_cursor_clock();
+	c->cursor_blink_status = 0;
 }
 
 void nio_cursor_enable(nio_console* csl, bool enable_cursor)
