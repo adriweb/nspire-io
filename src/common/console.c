@@ -182,7 +182,10 @@ void nio_scroll(nio_console* csl)
 	memmove(c->data,c->data+c->max_x,c->max_x*(c->max_y-1));
 	memmove(c->color,c->color+c->max_x,c->max_x*(c->max_y-1)*2);
 	memset(c->data+(c->max_x*(c->max_y-1)),0,c->max_x);
-	memset(c->color+(c->max_x*(c->max_y-1)),0,c->max_x*2);
+	unsigned short color = (c->default_background_color << 8) | c->default_foreground_color;
+	for(int i = c->max_x*(c->max_y-1); i < c->max_x * c->max_y; i++)
+		c->color[i] = color;
+
 	if (c->drawing_enabled) {
 		nio_set_global_color(c->default_background_color);
 		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT);
