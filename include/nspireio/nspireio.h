@@ -29,6 +29,10 @@
 #ifndef NSPIREIO_H
 #define NSPIREIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "platform.h"
 #include "queue.h"
 
@@ -414,5 +418,9 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
 void nio_cursor_custom(nio_console* c, const unsigned char cursor_data[6]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
