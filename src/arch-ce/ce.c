@@ -108,12 +108,20 @@ void nio_vram_pixel_set(unsigned int x, unsigned int y)
 
 void nio_vram_fill(unsigned x, unsigned y, unsigned w, unsigned h)
 {
+    // Hack: Round up to the screen width to cover the pixels between the last char and the edge.
+    if(x + w == (unsigned)(SCREEN_WIDTH/NIO_CHAR_WIDTH) * NIO_CHAR_WIDTH)
+        w = SCREEN_WIDTH - x;
+
     gfx_FillRectangle_NoClip(x, (uint8_t) y, w, (uint8_t) h);
 }
 
 void nio_vram_scroll(unsigned x, unsigned y, unsigned w, unsigned h, unsigned scroll) {
     if (!scroll) return;
     gfx_ShiftUp((uint8_t) scroll);
+
+    // Hack: Round up to the screen width to cover the pixels between the last char and the edge.
+    if(x + w == (unsigned)(SCREEN_WIDTH/NIO_CHAR_WIDTH) * NIO_CHAR_WIDTH)
+        w = SCREEN_WIDTH - x;
 
 // TODO: support non-full scroll
 /*
