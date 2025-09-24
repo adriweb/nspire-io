@@ -42,27 +42,17 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-
-// CE-specific stuff
-#include <tice.h>
-#include <graphx.h>
-#include <keypadc.h>
 
 // Fullscreen definitions
 
 #define NIO_MAX_ROWS 30
 #define NIO_MAX_COLS 53
 
-#define SCREEN_WIDTH    gfx_lcdWidth
-#define SCREEN_HEIGHT   gfx_lcdHeight
+#define SCREEN_WIDTH    GFX_LCD_WIDTH
+#define SCREEN_HEIGHT   GFX_LCD_HEIGHT
 
 void wait_key_pressed(void); // blocks until a key is pressed
 bool any_key_pressed(void); // non-blocking, TRUE if any key pressed
-
-#define strerror(errno) "errno"
 
 /** Initializes double buffering.
 */

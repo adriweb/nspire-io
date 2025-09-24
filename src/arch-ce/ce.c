@@ -218,5 +218,5 @@ unsigned char nio_ascii_get(uint8_t* adaptive_cursor_state)
 
 char* nio_get_back_buffer()
 {
-    return (char*) (gfx_vram + LCD_WIDTH*LCD_HEIGHT); // back buffer since 8bpp
+    return (char*) (gfx_vram + SCREEN_WIDTH*SCREEN_HEIGHT); // back buffer since 8bpp
 }
